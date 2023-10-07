@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Saver</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: red;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff3333;
+        }
+
+        #saved-passwords {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Password Saver</h1>
+    </header>
+    <div class="container">
+        <form id="save-form">
+            <input type="text" placeholder="Enter your name">
+            <input type="password" placeholder="Enter your password">
+            <button type="button" id="next-button">Next</button>
+        </form>
+
+        <div id="saved-passwords">
+            <h2>Saved Passwords:</h2>
+            <ul id="password-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Maintain a list of saved credentials
+        const savedCredentials = JSON.parse(localStorage.getItem('savedCredentials')) || [];
+        const saveForm = document.getElementById('save-form');
+        const nextButton = document.getElementById('next-button');
+        const passwordList = document.getElementById('password-list');
+
+        nextButton.addEventListener('click', () => {
+            // Collect user input
+            const nameInput = saveForm.querySelector('input[type="text"]').value;
+            const passwordInput = saveForm.querySelector('input[type="password"]').value;
+
+            // Save the collected data
+            if (nameInput && passwordInput) {
+                savedCredentials.push({ name: nameInput, password: passwordInput });
+                updateSavedPasswordsList();
+                saveForm.reset();
+
+                // Save to localStorage
+                localStorage.setItem('savedCredentials', JSON.stringify(savedCredentials));
+            }
+        });
+
+        function updateSavedPasswordsList() {
+            passwordList.innerHTML = '';
+            savedCredentials.forEach((cred, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Name: ${cred.name}, Password: ${cred.password}`;
+                passwordList.appendChild(listItem);
+            });
+        }
+
+        // Initialize the list of saved credentials
+        updateSavedPasswordsList();
+    </script>
+</body>
+</html>
