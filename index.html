@@ -8,33 +8,31 @@
         body {
             background-color: black;
             color: white;
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background-color: red;
-            text-align: center;
-            padding: 20px;
+            font-family: Arial, sans-serif;
         }
 
         h1 {
-            margin: 0;
+            color: red;
         }
 
         .container {
             max-width: 400px;
             margin: 0 auto;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"] {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
+            margin: 5px 0;
             border: none;
-            border-radius: 5px;
+            border-bottom: 1px solid red;
+            background-color: black;
+            color: white;
+            outline: none;
         }
 
         button {
@@ -42,73 +40,74 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
             cursor: pointer;
+        }
+        h2 {
+            color: red;
+            text-align: center;
         }
 
         button:hover {
-            background-color: #ff3333;
+            background-color: darkred;
         }
 
-        #saved-passwords {
+        #passwords {
             margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        }
+
+        #passwordList {
+            list-style: none;
+            padding: 0;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Password Saver</h1>
-    </header>
     <div class="container">
-        <form id="save-form">
-            <input type="text" placeholder="Enter your name">
-            <input type="password" placeholder="Enter your password">
-            <button type="button" id="next-button">Next</button>
-        </form>
-
-        <div id="saved-passwords">
-            <h2>Saved Passwords:</h2>
-            <ul id="password-list"></ul>
+        <h1>Password Saver</h1>
+        <input type="text" id="websiteName" placeholder="Website Name">
+        <input type="text" id="password" placeholder="Password">
+        <button onclick="savePassword()">Save</button>
+        <div id="passwords">
+            <h2>Saved Passwords</h2>
+            <ul id="passwordList"></ul>
         </div>
     </div>
 
     <script>
-        // Maintain a list of saved credentials
-        const savedCredentials = JSON.parse(localStorage.getItem('savedCredentials')) || [];
-        const saveForm = document.getElementById('save-form');
-        const nextButton = document.getElementById('next-button');
-        const passwordList = document.getElementById('password-list');
+        // Function to save passwords to local storage
+        function savePassword() {
+            const websiteName = document.getElementById("websiteName").value;
+            const password = document.getElementById("password").value;
 
-        nextButton.addEventListener('click', () => {
-            // Collect user input
-            const nameInput = saveForm.querySelector('input[type="text"]').value;
-            const passwordInput = saveForm.querySelector('input[type="password"]').value;
+            if (websiteName && password) {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${websiteName}: ${password}`;
 
-            // Save the collected data
-            if (nameInput && passwordInput) {
-                savedCredentials.push({ name: nameInput, password: passwordInput });
-                updateSavedPasswordsList();
-                saveForm.reset();
+                const passwordList = document.getElementById("passwordList");
+                passwordList.appendChild(listItem);
 
-                // Save to localStorage
-                localStorage.setItem('savedCredentials', JSON.stringify(savedCredentials));
+                // Store the data in localStorage
+                const savedPasswords = JSON.parse(localStorage.getItem("passwords")) || [];
+                savedPasswords.push({ websiteName, password });
+                localStorage.setItem("passwords", JSON.stringify(savedPasswords));
+
+                document.getElementById("websiteName").value = "";
+                document.getElementById("password").value = "";
             }
-        });
+        }
 
-        function updateSavedPasswordsList() {
-            passwordList.innerHTML = '';
-            savedCredentials.forEach((cred, index) => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `Name: ${cred.name}, Password: ${cred.password}`;
+        // Load and display saved passwords on page load
+        window.onload = function () {
+            const passwordList = document.getElementById("passwordList");
+            const savedPasswords = JSON.parse(localStorage.getItem("passwords")) || [];
+
+            savedPasswords.forEach((entry) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${entry.websiteName}: ${entry.password}`;
                 passwordList.appendChild(listItem);
             });
         }
-
-        // Initialize the list of saved credentials
-        updateSavedPasswordsList();
     </script>
+
 </body>
 </html>
